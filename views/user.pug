@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title= "User Info"
+    body
+        table(border='1')
+            tr
+                th "ShopId"
+                th "power"
+                th "score1"
+                th "score2"
+                th "score3"
+                th "content"
+                th "photo"
+                th "date"
+                th "filtered"
+            each item in reviewsList
+                tr
+                    td #{item.shopId}
+                    td #{item.power}
+                    td #{item.score1}
+                    td #{item.score2}
+                    td #{item.score3}
+                    td #{item.content}
+                    td #{item.photo}
+                    td #{item.date}
+                    td #{item.filtered}
