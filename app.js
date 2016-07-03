@@ -51,8 +51,18 @@ app.get('/community/:communityId', function(req, res) {
     console.log(query);
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
+        shopString = result[0].shopList;
+        r = /\d+, \d+/g;
+        shopStringList = shopString.match(r);
+        shopList = [];
+        for (item in shopStringList){
+            shopId = eval(shopStringList[item].split(',')[0]);
+            number = eval(shopStringList[item].split(',')[1]);
+            tmp = [shopId, number];
+            shopList.push(tmp);
+        }
         if(result){
-            res.render('community', {info: result});
+            res.render('community', {info: result, shopList: shopList});
         }
     });
 });
