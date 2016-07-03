@@ -52,7 +52,7 @@ app.get('/community/:communityId', function(req, res) {
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
         if(result){
-            res.render('community_2', {info: result});
+            res.render('community', {info: result});
         }
     });
 });

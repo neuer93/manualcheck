@@ -15,7 +15,8 @@ html
                      if item2 ==','
                          li
                              a(href='/users/'+str) #{str}
-                             a(href='https://www.dianping.com/member/'+str)  #{str}'s reviews
+                             |**|
+                             a(href='https://www.dianping.com/member/' + str +'/reviews')  #Dianping
                          - str = ''
                      else 
                          if item2 != ' '
@@ -23,10 +24,9 @@ html
                  li
                      a(href='/users/'+str) #{str} 
                      a(href='https://www.dianping.com/member/'+str)  #{str}'s reviews
-                 
-                     
+
            li ------------------------------------------------------------------
-           p shopList: 
+           p shopList:
                  li
                  - var str =''
                  - var flag=0
@@ -36,7 +36,7 @@ html
                      else
                          if item2 ==','
                              - flag = 0
-                             li 
+                             li
                                  a(href='https://www.dianping.com/shop/'+str) #{str}
                              - str =''
                          else
