@@ -47,6 +47,14 @@ app.get('/users/:userId', function (req, res) {
 
 app.get('/community/:communityId', function(req, res) {
     console.log('community');
+    var query = 'select size, firstReviewsperuser, userList, shopList, suspiciousShopList, remark, avgScore, varScore, entropyOfShops, entropyOfGeoShops, per5StarReview, per5StartUser, avgDeltaScores, diameter, density, vertex, globalcc, done, manualCheck from community where id=' +    req.params.communityId;
+    console.log(query);
+    connection.query(query, function(err, result, fields){
+        if(err){throw err;}
+        if(result){
+            res.render('community_2', {info: result});
+        }
+    });
 });
 
 app.listen(3300, function (){

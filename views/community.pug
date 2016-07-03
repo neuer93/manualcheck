@@ -1,0 +1,76 @@
+doctype html
+html
+    head
+        title= "community Info"
+    body
+        each item in info
+           p size: #{item.size}
+           li ------------------------------------------------------------------
+           p firstReviewsperuser: #{item.firstReviewsperuser}
+           li ------------------------------------------------------------------
+           p userList:
+                 li
+                 - var str = ''
+                 each item2 in item.userList
+                     if item2 ==','
+                         li
+                             a(href='/users/'+str) #{str}
+                             a(href='https://www.dianping.com/member/'+str)  #{str}'s reviews
+                         - str = ''
+                     else 
+                         if item2 != ' '
+                             - str = str + item2
+                 li
+                     a(href='/users/'+str) #{str} 
+                     a(href='https://www.dianping.com/member/'+str)  #{str}'s reviews
+                 
+                     
+           li ------------------------------------------------------------------
+           p shopList: 
+                 li
+                 - var str =''
+                 - var flag=0
+                 each item2 in item.shopList
+                     if item2 == '('
+                         - flag = 1
+                     else
+                         if item2 ==','
+                             - flag = 0
+                             li 
+                                 a(href='https://www.dianping.com/shop/'+str) #{str}
+                             - str =''
+                         else
+                             if (item2 >= '0')
+                                 if (item2 <= '9')
+                                     if flag
+                                         - str = str +item2
+           li ------------------------------------------------------------------
+           p suspiciousShopList: #{item.suspiciousShopList}
+           li ------------------------------------------------------------------
+           p remark: #{item.remark}
+           li ------------------------------------------------------------------
+           p avgScore: #{item.avgScore}
+           li ------------------------------------------------------------------
+           p varScore: #{item.varScore}
+           li ------------------------------------------------------------------
+           p entropyOfShops: #{item.entropyOfShops}
+           li ------------------------------------------------------------------
+           p entropyOfGeoShops: #{item.entropyOfGeoShops}
+           li ------------------------------------------------------------------
+           p per5StarReview: #{item.per5StarReview}
+           li ------------------------------------------------------------------
+           p per5StartUser: #{item.per5StartUser}
+           li ------------------------------------------------------------------
+           p avgDeltaScores: #{item.avgDeltaScores}
+           li ------------------------------------------------------------------
+           p diameter: #{item.diameter}
+           li ------------------------------------------------------------------
+           p density: #{item.density}
+           li ------------------------------------------------------------------
+           p vertex: #{item.vertex}
+           li ------------------------------------------------------------------
+           p globalcc: #{item.globalcc}
+           li ------------------------------------------------------------------
+           p done: #{item.done}
+           li ------------------------------------------------------------------
+           p manualCheck: #{item.manualCheck}
