@@ -7,8 +7,8 @@ var dateFormat = require('dateformat');
 var connection = mysql.createConnection({
       host     : 'localhost',
       user     : 'root',
-      password : 'nsec@522',
-      database : 'sybildet'
+      password : 'huangyd',//'nsec@522',
+      database : 'testdb'//'sybildet'
 });
 connection.connect();
 
@@ -45,8 +45,37 @@ app.get('/users/:userId', function (req, res) {
     });
 });
 
+app.get('/allCommunity', function(req, res){
+    console.log('all community');
+    var query = 'select id from community';
+    console.log(query);
+    connection.query(query, function(err, result, fields){
+        if(err){throw err;}
+        if(result){
+            res.render('allCommunity', {info: result});
+        }
+    });
+});
+
 app.get('/community/:communityId', function(req, res) {
     console.log('community');
+    if(req.query.isManualCheck){
+        if(req.query.isManualCheck == '1' || req.query.isManualCheck == '0'){
+            var manualCheck = req.query.isManualCheck;
+            var update = 'update community set manualCheck=' + manualCheck + ' where id=' + req.params.communityId;
+            console.log(update);
+            connection.query(update, function(err, result){
+             if(err){throw err;}
+             //console.log('update affectedRows',result.affectedRows);
+             });
+        }
+        else{
+            if(req.query.isManualCheck != ''){
+                res.render('error');
+                return;
+            }
+        }
+    }
     var query = 'select size, firstReviewsperuser, userList, shopList, suspiciousShopList, remark, avgScore, varScore, entropyOfShops, entropyOfGeoShops, per5StarReview, per5StartUser, avgDeltaScores, diameter, density, vertex, globalcc, done, manualCheck from community where id=' +    req.params.communityId;
     console.log(query);
     connection.query(query, function(err, result, fields){

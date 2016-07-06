@@ -61,3 +61,10 @@ html
            p done: #{item.done}
            li ------------------------------------------------------------------
            p manualCheck: #{item.manualCheck}
+                form(action='', method='get')
+                    input(type='radio', name='isManualCheck', id='isManualCheck', value='1')
+                    |1
+                    input(type='radio', name='isManualCheck', id='isManualCheck', value='0')
+                    |0
+                    -//input(type='text', name='isManualCheck')
+                    input(type='submit', name='button', value='submit')

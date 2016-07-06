@@ -1,0 +1,11 @@
+doctype html
+html
+    head
+        title= "all community"
+    body
+        h2 communityList:
+            li
+            each item in info
+                each value,key in item
+                    p
+                        a(href='/community/' + value) #{value}
