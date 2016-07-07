@@ -7,8 +7,8 @@ var dateFormat = require('dateformat');
 var connection = mysql.createConnection({
       host     : 'localhost',
       user     : 'root',
-      password : '194909',//'nsec@522',
-      database : 'commentinfoshop'//'sybildet'
+      password : 'nsec@522',//'nsec@522',
+      database : 'sybildet'//'sybildet'
 });
 connection.connect();
 
