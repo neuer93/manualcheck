@@ -4,63 +4,7 @@ html
         title= "community Info"
     body
         each item in info
-           p size: #{item.size}
-           li ------------------------------------------------------------------
-           p firstReviewsperuser: #{item.firstReviewsperuser}
-           li ------------------------------------------------------------------
-           p userList:
-                 li
-                 - var str = ''
-                 each item2 in item.userList
-                     if item2 ==','
-                         li
-                             a(href='/users/'+str) #{str}
-                             |**|
-                             a(href='https://www.dianping.com/member/' + str +'/reviews')  #Dianping
-                         - str = ''
-                     else 
-                         if item2 != ' '
-                             - str = str + item2
-                 li
-                     a(href='/users/'+str) #{str} 
-                     a(href='https://www.dianping.com/member/'+str)  #{str}'s reviews
-
-           li ------------------------------------------------------------------
-           p shopList:
-                 each item2 in shopList
-                     li
-                         a(href='https://www.dianping.com/shop/'+ item2[0]) #{item2[0]}
-                         span    ,  #{item2[1]}
-           li ------------------------------------------------------------------
-           p suspiciousShopList: #{item.suspiciousShopList}
-           li ------------------------------------------------------------------
-           p remark: #{item.remark}
-           li ------------------------------------------------------------------
-           p avgScore: #{item.avgScore}
-           li ------------------------------------------------------------------
-           p varScore: #{item.varScore}
-           li ------------------------------------------------------------------
-           p entropyOfShops: #{item.entropyOfShops}
-           li ------------------------------------------------------------------
-           p entropyOfGeoShops: #{item.entropyOfGeoShops}
-           li ------------------------------------------------------------------
-           p per5StarReview: #{item.per5StarReview}
-           li ------------------------------------------------------------------
-           p per5StartUser: #{item.per5StartUser}
-           li ------------------------------------------------------------------
-           p avgDeltaScores: #{item.avgDeltaScores}
-           li ------------------------------------------------------------------
-           p diameter: #{item.diameter}
-           li ------------------------------------------------------------------
-           p density: #{item.density}
-           li ------------------------------------------------------------------
-           p vertex: #{item.vertex}
-           li ------------------------------------------------------------------
-           p globalcc: #{item.globalcc}
-           li ------------------------------------------------------------------
-           p done: #{item.done}
-           li ------------------------------------------------------------------
-           p manualCheck: #{item.manualCheck}
+            h1(align='center') manualCheck: #{item.manualCheck}
                 form(action='', method='get')
                     input(type='radio', name='isManualCheck', id='isManualCheck', value='1')
                     |1
@@ -68,3 +12,71 @@ html
                     |0
                     -//input(type='text', name='isManualCheck')
                     input(type='submit', name='button', value='submit')
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 size: #{item.size}
+                div(style='float:left;width:50%;height:50px')
+                    h4 firstReviewsperuser: #{item.firstReviewsperuser}
+            div
+                div(style='float:left;width:100%;height:50px')
+                    h4 suspiciousShopList: #{item.suspiciousShopList} 
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 remark: #{item.remark}
+                div(style='float:left;width:50%;height:50px')
+                    h4 avgScore: #{item.avgScore}
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 varScore: #{item.varScore}
+                div(style='float:left;width:50%;height:50px')
+                    h4 entropyOfShops: #{item.entropyOfShops}
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 entropyOfGeoShops: #{item.entropyOfGeoShops}
+                div(style='float:left;width:50%;height:50px')
+                    h4 per5StarReview: #{item.per5StarReview}
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 per5StartUser: #{item.per5StartUser}
+                div(style='float:left;width:50%;height:50px')
+                    h4 avgDeltaScores: #{item.avgDeltaScores}
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 diameter: #{item.diameter}
+                div(style='float:left;width:50%;height:50px')
+                    h4 density: #{item.density}
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h4 vertex: #{item.vertex}
+                div(style='float:left;width:50%;height:50px')
+                    h4 globalcc: #{item.globalcc}
+            div
+                div(style='float:left;width:100%;height:50px')
+                    h4 done: #{item.done}
+                
+            div
+                div(style='float:left;width:50%;height:50px')
+                    h3 users
+                div(style='float:left;width:50%;height:50px')
+                    h3 shops
+            - var max = 0
+            if max < userList.length
+                  - max = userList.length
+            if max < shopList.length
+                  - max = shopList.length
+            - var str = ''
+
+            - for (var i = 0; i < max; ++i){
+                div
+                    if userList[i]!=null
+                        div(style='float:left;width:50%;height:50px')
+                            a(href='/users/'+userList[i]) #{userList[i]}
+                            |**|
+                            a(href='https://www.dianping.com/member/' + userList[i] +'/reviews')  #Dianping
+                    else
+                        div(style='float:left;width:50%;height:50px')
+                            p 
+                    if shopList[i]!=null
+                        div(style='float:left;width:50%;height:50px')
+                            a(href='https://www.dianping.com/shop/'+ shopList[i][0]) #{shopList[i][0]} , #{shopList[i][1]}
+            - } 

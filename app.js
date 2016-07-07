@@ -7,8 +7,8 @@ var dateFormat = require('dateformat');
 var connection = mysql.createConnection({
       host     : 'localhost',
       user     : 'root',
-      password : 'nsec@522',//'nsec@522',
-      database : 'sybildet'//'sybildet'
+      password : '194909',//'nsec@522',
+      database : 'commentinfoshop'//'sybildet'
 });
 connection.connect();
 
@@ -31,8 +31,8 @@ app.get('/test', function (req, res) {
 
 app.get('/users/:userId', function (req, res) {
     console.log('user')
-    var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
-    'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
+    var query = 'select shopId, userId, power, avgprice, Isgroup, score1, score2, score3, photo, date, filtered, ' +
+    'content, numcommonuser from commentinfoshop where userId=' + req.params.userId + ' order by shopID asc';
     console.log(query);
     connection.query(query, function(err, rows, fields){
         if(err){throw err;}
@@ -47,7 +47,7 @@ app.get('/users/:userId', function (req, res) {
 
 app.get('/allCommunity', function(req, res){
     console.log('all community');
-    var query = 'select id, manualCheck, size, avgDeltaScores, entropyOfShops, entropyOfGeoShops from community where done = 0 order by size desc';
+    var query = 'select id from community';
     console.log(query);
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
@@ -90,10 +90,20 @@ app.get('/community/:communityId', function(req, res) {
                 number = eval(shopStringList[item].split(',')[1]);
                 tmp = [shopId, number];
                 shopList.push(tmp);
+                //console.log(tmp);
             }
         }
+        userList = [];
+        if (result.length>0){
+            userString = result[0].userList;
+            userStringList = userString.split(',');
+            for (item in userStringList){
+                userList.push(userStringList[item]);
+            }
+            console.log(userList);
+        }
         if(result){
-            res.render('community', {info: result, shopList: shopList});
+            res.render('community_3', {info: result, userList: userList, shopList: shopList});
         }
     });
 });
