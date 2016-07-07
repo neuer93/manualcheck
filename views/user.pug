@@ -5,6 +5,7 @@ html
     body
         table(border='1')
             tr
+                th "ShopName"
                 th "ShopId"
                 th "power"
                 th "score1"
@@ -16,7 +17,10 @@ html
                 th "filtered"
             each item in reviewsList
                 tr
-                    td #{item.shopId}
+                    td #{item.shopname}
+
+                    td
+                       a(href='https://www.dianping.com/shop/'+ item.shopId) #{item.shopId}
                     td #{item.power}
                     td #{item.score1}
                     td #{item.score2}

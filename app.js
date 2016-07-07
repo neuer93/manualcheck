@@ -31,8 +31,8 @@ app.get('/test', function (req, res) {
 
 app.get('/users/:userId', function (req, res) {
     console.log('user')
-    var query = 'select shopId, userId, power, avgprice, Isgroup, score1, score2, score3, photo, date, filtered, ' +
-    'content, numcommonuser from commentinfoshop where userId=' + req.params.userId + ' order by shopID asc';
+    var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
+    'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
     console.log(query);
     connection.query(query, function(err, rows, fields){
         if(err){throw err;}
@@ -47,7 +47,7 @@ app.get('/users/:userId', function (req, res) {
 
 app.get('/allCommunity', function(req, res){
     console.log('all community');
-    var query = 'select id from community';
+    var query = 'select id, manualCheck, size, avgDeltaScores, entropyOfShops, entropyOfGeoShops from community where done = 0 order by size desc';
     console.log(query);
     connection.query(query, function(err, result, fields){
         if(err){throw err;}

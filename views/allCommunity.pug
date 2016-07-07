@@ -4,8 +4,20 @@ html
         title= "all community"
     body
         h2 communityList:
-            li
-            each item in info
-                each value,key in item
-                    p
-                        a(href='/community/' + value) #{value}
+            table(border="1")
+                tr
+                    th "CommunityId"
+                    th "ManualCheck"
+                    th "Size"
+                    th "avgDeltaScore"
+                    th "entropyOfShops"
+                    th "entropyOfGeoShops"
+                each item in info
+                    tr
+                        td
+                            a(href='/community/' + item.id) #{item.id}
+                        td #{item.manualCheck}
+                        td #{item.size}
+                        td #{item.avgDeltaScores}
+                        td #{item.entropyOfShops}
+                        td #{item.entropyOfGeoShops}
