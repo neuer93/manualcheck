@@ -29,6 +29,23 @@ app.get('/test', function (req, res) {
       res.send('test');
 });
 
+app.get('/community-shops/:communityId/:shopId', function (req, res) {
+    var shopId = req.params.shopId;
+    var communityId = req.params.shopId;
+    var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
+    'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
+    var query = "select userid,date from reviewsifted20 where shopid = " + shopId;
+    connection.query(query, function(err, rows, fields){
+        if(err){throw err;}
+        if(rows){
+            for (item in rows){
+                rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
+            }
+            res.render('user', {reviewsList: rows});
+        }
+    });
+});
+
 app.get('/users/:userId', function (req, res) {
     console.log('user')
     var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
