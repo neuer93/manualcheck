@@ -1,0 +1,14 @@
+doctype html
+html
+    head
+        title= "Community - Shop"
+        script(src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js")
+        script(src="https://code.highcharts.com/highcharts.js")
+        script(src="https://code.highcharts.com/modules/exporting.js")
+        script(src="/js/communityShop.js")
+    body
+        div#container(style="min-width: 310px; height: 400px; margin: 0 auto")
+
+    script.
+        categories = [#{categories}]
+        dataList = [#{dataList}]

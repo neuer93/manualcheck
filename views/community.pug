@@ -68,12 +68,14 @@ html
                     if userList[i]!=null
                         div(style='float:left;width:50%;height:50px')
                             a(href='/users/'+userList[i]) #{userList[i]}
-                            |**|
+                            |   |***|
                             a(href='https://www.dianping.com/member/' + userList[i] +'/reviews')  #Dianping
                     else
                         div(style='float:left;width:50%;height:50px')
-                            p 
+                            p
                     if shopList[i]!=null
                         div(style='float:left;width:50%;height:50px')
                             a(href='https://www.dianping.com/shop/'+ shopList[i][0]) #{shopList[i][0]} , #{shopList[i][1]}
-            - } 
+                            |   |***|
+                            a(href='/community-shop/' + communityId + '/' + shopList[i][0]) trend
+            - }

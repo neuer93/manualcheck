@@ -13,6 +13,7 @@ var connection = mysql.createConnection({
 connection.connect();
 
 app.set('view engine', 'pug');
+app.use(express.static('public'));
 
 var middleTest = function(req, res, next){
     console.log(Date.now());
@@ -29,19 +30,65 @@ app.get('/test', function (req, res) {
       res.send('test');
 });
 
-app.get('/community-shops/:communityId/:shopId', function (req, res) {
+app.get('/community-shop/:communityId/:shopId', function (req, res) {
     var shopId = req.params.shopId;
-    var communityId = req.params.shopId;
-    var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
-    'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
-    var query = "select userid,date from reviewsifted20 where shopid = " + shopId;
+    var communityId = req.params.communityId;
+    var query = "select userid,date from commentinfoshop where shopid = " + shopId;
     connection.query(query, function(err, rows, fields){
         if(err){throw err;}
+        var reviewsList = [];
         if(rows){
             for (item in rows){
-                rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
+                var dateTmp = rows[item].date;
+                var userId = rows[item].userid;
+                reviewsList.push({date: dateTmp, userId: userId});
             }
-            res.render('user', {reviewsList: rows});
+            console.log(reviewsList.length);
+            console.log(communityId);
+            var query = "select userList from community where id = " + communityId;
+            connection.query(query, function(err, rows, fields){
+                if(err){throw err;}
+                if (rows){
+                    userList = rows[0].userList.split(',');
+                    for (i in userList){
+                        userList[i] = eval(userList[i]);
+                    }
+                    var dateList = [];
+                    for (i in reviewsList){
+                        if (userList.indexOf(reviewsList[i].userId) >= 0){
+                            dateList.push(reviewsList[i].date);
+                        }
+                    }
+                    dateList.sort(function(a,b){
+                        return new Date(a) - new Date(b);
+                    });
+
+                    /*
+                     * Calculate historam.
+                     */
+                    var categories = [];
+                    var dataList = [];
+                    for (var i=0; i < 104; ++i){
+                        categories.push(i);
+                    }
+                    var current = 0;
+                    var currentNum = 0;
+                    var currentDate = new Date('2014-01-01');
+                    while (current < dateList.length){
+                        var tmpDate = new Date(currentDate);
+                        if (dateList[current] > tmpDate.setDate(currentDate.getDate() + 7)){
+                            dataList.push(currentNum);
+                            currentNum = 0;
+                            currentDate.setDate(currentDate.getDate() + 7);
+                        }else{
+                            currentNum += 1;
+                            current += 1;
+                        }
+                    }
+                    while(dataList.length < 104){ dataList.push(0);}
+                    res.render('communityShop', {categories: categories, dataList: dataList});
+                }
+            });
         }
     });
 });
@@ -76,6 +123,7 @@ app.get('/allCommunity', function(req, res){
 
 app.get('/community/:communityId', function(req, res) {
     console.log('community');
+    communityId = req.params.communityId;
     if(req.query.isManualCheck){
         if(req.query.isManualCheck == '1' || req.query.isManualCheck == '0'){
             var manualCheck = req.query.isManualCheck;
@@ -119,7 +167,7 @@ app.get('/community/:communityId', function(req, res) {
             }
         }
         if(result){
-            res.render('community', {info: result, userList: userList, shopList: shopList});
+            res.render('community', {info: result, userList: userList, shopList: shopList, communityId: communityId});
         }
     });
 });
