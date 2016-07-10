@@ -1,7 +1,11 @@
 doctype html
 html
     head
-        title= "community Info"
+        title= "Community"
+        script(src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js")
+        script(src="https://code.highcharts.com/highcharts.js")
+        script(src="https://code.highcharts.com/modules/exporting.js")
+        script(src="/js/community.js")
     body
         each item in info
             h1(align='center') manualCheck: #{item.manualCheck}
@@ -79,3 +83,9 @@ html
                             |   |***|
                             a(href='/community-shop/' + communityId + '/' + shopList[i][0]) Trend
             - }
+        div(style='align:center') trend
+        div(id='container',style='height:400px; width:100%;')
+
+    script.
+        categories = [#{categories}]
+        dataList = [#{dataList}]

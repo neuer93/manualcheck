@@ -74,7 +74,7 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
                     var current = 0;
                     var currentNum = 0;
                     var currentDate = new Date('2014-01-01');
-                    while (current < dateList.length){
+                    while (current < dateList.length){//bianli
                         var tmpDate = new Date(currentDate);
                         if (dateList[current] > tmpDate.setDate(currentDate.getDate() + 7)){
                             dataList.push(currentNum);
@@ -166,9 +166,70 @@ app.get('/community/:communityId', function(req, res) {
                 userList.push(userStringList[item]);
             }
         }
-        if(result){
-            res.render('community', {info: result, userList: userList, shopList: shopList, communityId: communityId});
-        }
+        //community->user->review
+        var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")"; 
+        console.log(query2);
+        var categories = [];
+        var dataList = [];
+        connection.query(query2, function(err, rows, fields){
+            if(err){throw err;}
+            var reviewsList = [];
+            if(rows){
+                for (item in rows){
+                    var dateTmp = rows[item].date;
+                    var userId = rows[item].userid;
+                    reviewsList.push({date: dateTmp, userId: userId});
+                }
+                var dateList = [];
+                for (i in reviewsList){
+                    dateList.push(reviewsList[i].date);
+                }
+                dateList.sort(function(a,b){
+                    return new Date(a) - new Date(b);
+                });
+                //console.log(dateList);
+                
+                var currentDate = new Date(2014,0,1);
+                //console.log(currentDate);
+                var lastDate = new Date(2016,0,1);
+                //console.log(lastDate);
+                while (currentDate < lastDate){
+                    var tmp = new Date(currentDate);
+                    //console.log(tmp);
+                    categories.push(tmp);
+                    currentDate.setDate(tmp.getDate() + 7);
+                }
+                categories.push(currentDate);
+                
+                for (item in categories){
+                    categories[item] = dateFormat(categories[item], 'isoDateTime').replace(/T/, '').replace(/\..+/, '').replace(/00.*/,'').replace(/-/,'').replace(/-/,'');
+                }
+                //console.log(categories);
+                    //
+                var current = 0;
+                var currentNum = 0;
+                var currentDate = new Date('2014-01-01');
+                var tmpDate = new Date('2014-01-01');
+                while (current < dateList.length){//bianli
+                    tmpDate.setDate(currentDate.getDate() + 7);
+                    //console.log(tmpDate);
+                    if (dateList[current] > tmpDate){    
+                        dataList.push(currentNum);
+                        currentNum = 0;
+                        currentDate.setDate(tmpDate.getDate());
+                    }else{
+                        currentNum += 1;
+                        current += 1;
+                    }
+                }
+                dataList.push(currentNum);
+                while (dataList.length < categories.length){ dataList.push(0);}
+                if(result){
+                    res.render('community', {info: result, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
+                }
+            }
+        });
+        
     });
 });
 
