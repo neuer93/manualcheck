@@ -142,7 +142,6 @@ app.get('/community/:communityId', function(req, res) {
         }
     }
     var query = 'select size, firstReviewsperuser, userList, shopList, suspiciousShopList, remark, avgScore, varScore, entropyOfShops, entropyOfGeoShops, per5StarReview, per5StartUser, avgDeltaScores, diameter, density, vertex, globalcc, done, manualCheck from community where id=' +    req.params.communityId;
-    console.log(query);
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
         shopList = [];
@@ -168,7 +167,6 @@ app.get('/community/:communityId', function(req, res) {
         }
         //community->user->review
         var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")"; 
-        console.log(query2);
         var categories = [];
         var dataList = [];
         connection.query(query2, function(err, rows, fields){
