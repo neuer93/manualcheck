@@ -94,17 +94,27 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
 });
 
 app.get('/users/:userId', function (req, res) {
-    console.log('user')
-    var query = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
+    console.log('user');
+    var query1 = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
     'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
-    console.log(query);
-    connection.query(query, function(err, rows, fields){
+    var query2 = 'select coreNeighbour from usernode where userId=' + req.params.userId;
+    console.log(query1);
+    console.log(query2);
+    var coreNeighbour = null;
+    connection.query(query2, function(err, results, fields){
+        if(err){throw err;}
+        if(results){
+            coreNeighbour = results[0].coreNeighbour.split(',');
+            //console.log(coreNeighbour);
+        }
+    });
+    connection.query(query1, function(err, rows, fields){
         if(err){throw err;}
         if(rows){
             for (item in rows){
                 rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
             }
-            res.render('user', {reviewsList: rows});
+            res.render('user', {reviewsList: rows, coreNeighbour: coreNeighbour});
         }
     });
 });
