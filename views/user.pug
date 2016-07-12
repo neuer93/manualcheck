@@ -5,6 +5,12 @@ html
     body
         table(border='1')
             tr
+                th coreNeighbour:
+                td(colspan=10)
+                    -for (var i=0; i<coreNeighbour.length; i++){
+                        a(href='/users/' + coreNeighbour[i]) #{coreNeighbour[i]}&nbsp
+                    -}
+            tr
                 th "ShopName"
                 th "ShopId"
                 th "power"
@@ -18,7 +24,6 @@ html
             each item in reviewsList
                 tr
                     td #{item.shopname}
-
                     td
                        a(href='https://www.dianping.com/shop/'+ item.shopId) #{item.shopId}
                     td #{item.power}
