@@ -2,35 +2,47 @@ doctype html
 html
     head
         title= "User Info"
+        link(href='http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css', rel='stylesheet')
+        script(src='http://libs.baidu.com/jquery/1.9.0/jquery.js')
+        script(src='http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js')
     body
-        table(border='1')
-            tr
-                th coreNeighbour:
-                td(colspan=10)
-                    -for (var i=0; i<coreNeighbour.length; i++){
-                        a(href='/users/' + coreNeighbour[i]) #{coreNeighbour[i]}&nbsp
-                    -}
-            tr
-                th "ShopName"
-                th "ShopId"
-                th "power"
-                th "score1"
-                th "score2"
-                th "score3"
-                th "content"
-                th "photo"
-                th "date"
-                th "filtered"
-            each item in reviewsList
+        .container-fluid
+              .row-fluid
                 tr
-                    td #{item.shopname}
-                    td
-                       a(href='https://www.dianping.com/shop/'+ item.shopId) #{item.shopId}
-                    td #{item.power}
-                    td #{item.score1}
-                    td #{item.score2}
-                    td #{item.score3}
-                    td #{item.content}
-                    td #{item.photo}
-                    td #{item.date}
-                    td #{item.filtered}
+                    div(style='float:left;width:12.5%;height:50px')
+                        h4
+                            th &nbsp &nbsp coreNeighbour:
+                    div(style='float:left;width:87.5%;height:50px')
+                        h4
+                            td
+                                -for (var i=0; i<coreNeighbour.length; i++){
+                                    a(href='/users/' + coreNeighbour[i]) #{coreNeighbour[i]}&nbsp
+                                -}
+                .col-md-12
+                    table.table.table-hover
+                        thead
+                          tr
+                            th ShopName
+                            th ShopId
+                            th power
+                            th score1
+                            th score2
+                            th score3
+                            th content
+                            th photo
+                            th date
+                            th filtered
+                        tbody
+                          each item in reviewsList
+                            tr
+                                td #{item.shopname}
+                                td
+                                    a(href='https://www.dianping.com/shop/'+ item.shopId) #{item.shopId}
+                                td #{item.power}
+                                td #{item.score1}
+                                td #{item.score2}
+                                td #{item.score3}
+                                td #{item.content}
+                                td #{item.photo}
+                                td #{item.date}
+                                td #{item.filtered}
