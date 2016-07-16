@@ -2,22 +2,36 @@ doctype html
 html
     head
         title= "all community"
+        link(href='http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css', rel='stylesheet')
+        script(src='http://libs.baidu.com/jquery/1.9.0/jquery.js')
+        script(src='http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js')
     body
-        h2 communityList:
-            table(border="1")
-                tr
-                    th "CommunityId"
-                    th "ManualCheck"
-                    th "Size"
-                    th "avgDeltaScore"
-                    th "entropyOfShops"
-                    th "entropyOfGeoShops"
-                each item in info
-                    tr
-                        td
-                            a(href='/community/' + item.id) #{item.id}
-                        td #{item.manualCheck}
-                        td #{item.size}
-                        td #{item.avgDeltaScores}
-                        td #{item.entropyOfShops}
-                        td #{item.entropyOfGeoShops}
+        .container-fluid
+              h3 &nbsp communityList:
+              .row-fluid
+                .col-md-12
+                  table.table.table-hover
+                    thead
+                      tr
+                        th
+                          | CommunityId
+                        th
+                          | ManualCheck
+                        th
+                          | Size
+                        th
+                          | avgDeltaScore
+                        th
+                          | entropyOfShops
+                        th
+                          | entropyOfGeoShops
+                    tbody
+                      each item in info
+                          tr
+                            td
+                                a(href='/community/' + item.id) #{item.id}
+                            td #{item.manualCheck}
+                            td #{item.size}
+                            td #{item.avgDeltaScores}
+                            td #{item.entropyOfShops}
+                            td #{item.entropyOfGeoShops}
