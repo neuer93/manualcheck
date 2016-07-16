@@ -5,10 +5,10 @@ var mysql = require('mysql');
 var dateFormat = require('dateformat');
 
 var connection = mysql.createConnection({
-      host     : 'localhost',
-      user     : 'root',
-      password : 'nsec@522',
-      database : 'sybildet'
+    host     : 'localhost',
+    user     : 'root',
+    password : 'huangyd',
+    database : 'testdb'
 });
 connection.connect();
 
@@ -20,14 +20,14 @@ var middleTest = function(req, res, next){
     console.log(1);
     next();
     console.log(2);
-}
+};
 
 app.get('/', function (req, res) {
-    res.render('index', {title: 'Index', message: "Index page"})
+    res.render('index', {title: 'Index', message: "Index page"});
 });
 
 app.get('/test', function (req, res) {
-      res.send('test');
+    res.send('test');
 });
 
 app.get('/community-shop/:communityId/:shopId', function (req, res) {
@@ -96,7 +96,7 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
 app.get('/users/:userId', function (req, res) {
     console.log('user');
     var query1 = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
-    'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
+        'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
     var query2 = 'select coreNeighbour from usernode where userId=' + req.params.userId;
     console.log(query1);
     console.log(query2);
@@ -140,9 +140,9 @@ app.get('/community/:communityId', function(req, res) {
             var update = 'update community set manualCheck=' + manualCheck + ' where id=' + req.params.communityId;
             console.log(update);
             connection.query(update, function(err, result){
-             if(err){throw err;}
-             //console.log('update affectedRows',result.affectedRows);
-             });
+                if(err){throw err;}
+                //console.log('update affectedRows',result.affectedRows);
+            });
         }
         else{
             if(req.query.isManualCheck != ''){
@@ -151,7 +151,7 @@ app.get('/community/:communityId', function(req, res) {
             }
         }
     }
-    var query = 'select size, firstReviewsperuser, userList, shopList, suspiciousShopList, remark, avgScore, varScore, entropyOfShops, entropyOfGeoShops, per5StarReview, per5StartUser, avgDeltaScores, diameter, density, vertex, globalcc, done, manualCheck from community where id=' +    req.params.communityId;
+    var query = 'select id, size, firstReviewsperuser, userList, shopList, suspiciousShopList, remark, avgScore, varScore, entropyOfShops, entropyOfGeoShops, per5StarReview, per5StartUser, avgDeltaScores, diameter, density, vertex, globalcc, done, manualCheck from community where id=' +    req.params.communityId;
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
         shopList = [];
@@ -176,7 +176,7 @@ app.get('/community/:communityId', function(req, res) {
             }
         }
         //community->user->review
-        var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")"; 
+        var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")";
         var categories = [];
         var dataList = [];
         connection.query(query2, function(err, rows, fields){
@@ -196,7 +196,7 @@ app.get('/community/:communityId', function(req, res) {
                     return new Date(a) - new Date(b);
                 });
                 //console.log(dateList);
-                
+
                 var currentDate = new Date(2014,0,1);
                 //console.log(currentDate);
                 var lastDate = new Date(2016,0,1);
@@ -208,12 +208,12 @@ app.get('/community/:communityId', function(req, res) {
                     currentDate.setDate(tmp.getDate() + 7);
                 }
                 categories.push(currentDate);
-                
+
                 for (item in categories){
                     categories[item] = dateFormat(categories[item], 'isoDateTime').replace(/T/, '').replace(/\..+/, '').replace(/00.*/,'').replace(/-/,'').replace(/-/,'');
                 }
                 //console.log(categories);
-                    //
+                //
                 var current = 0;
                 var currentNum = 0;
                 var currentDate = new Date('2014-01-01');
@@ -221,7 +221,7 @@ app.get('/community/:communityId', function(req, res) {
                 while (current < dateList.length){//bianli
                     tmpDate.setDate(currentDate.getDate() + 7);
                     //console.log(tmpDate);
-                    if (dateList[current] > tmpDate){    
+                    if (dateList[current] > tmpDate){
                         dataList.push(currentNum);
                         currentNum = 0;
                         currentDate.setDate(tmpDate.getDate());
@@ -233,14 +233,15 @@ app.get('/community/:communityId', function(req, res) {
                 dataList.push(currentNum);
                 while (dataList.length < categories.length){ dataList.push(0);}
                 if(result){
-                    res.render('community', {info: result, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
+                    var communityID = result[0].id;
+                    res.render('community', {info: result, communityID: communityID, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
                 }
             }
         });
-        
+
     });
 });
 
 app.listen(3300, function (){
-      console.log('Example app listening on port 3300!');
+    console.log('Example app listening on port 3300!');
 });
