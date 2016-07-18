@@ -76,13 +76,33 @@ html
                     #Shoplist.tab-pane.fade
                         - var max = 0
                         - max = shopList.length
+                        - var cnt = 0;
+                        - var last_i = 0;
+                        - console.log(shopList[2][0]);
+                        - console.log(shopList[10][0]);
                         - for (var i = 0; i < max; ++i){
-                            div
-                                if shopList[i]!=null
-                                    div(style='float:left;width:25%;height:50px')
+                            if shopList[i]!=null
+                                - cnt = cnt+1;
+                                div    
+                                    div(style='float:left;width:25%;height:30px')
                                         a(href='https://www.dianping.com/shop/'+ shopList[i][0]) #{shopList[i][0]} , #{shopList[i][1]}
                                         |   |***|
                                         a(href='/community-shop/' + communityId + '/' + shopList[i][0]) Trend
+                                if cnt==4
+                                    - cnt=0;
+                                    - for (var j = last_i; j < last_i + 4; ++j){
+                                        div
+                                            div(style='float:left;width:25%;height:50px') #{shopList[j][2]}
+                                    - }
+                                    - last_i=last_i+4;
+                        - }
+                        - for (var j = 0; j < 4 -cnt; ++j){
+                            div
+                                div(style='float:left;width:25%;height:50px')
+                        - }
+                        - for (var j = last_i; j < last_i + cnt; ++j){
+                            div
+                                div(style='float:left;width:25%;height:50px') #{shopList[j][2]}
                         - }
                     #Userlist.tab-pane.fade
                         - max = userList.length

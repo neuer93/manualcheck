@@ -155,17 +155,32 @@ app.get('/community/:communityId', function(req, res) {
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
         shopList = [];
+        shopIdList = [];
+        shopNumList = [];
         if (result.length > 0){
             shopString = result[0].shopList;
             r = /\d+, \d+/g;
             shopStringList = shopString.match(r);
             for (item in shopStringList){
                 shopId = eval(shopStringList[item].split(',')[0]);
-                number = eval(shopStringList[item].split(',')[1]);
-                tmp = [shopId, number];
-                shopList.push(tmp);
-                //console.log(tmp);
+                shopNum = eval(shopStringList[item].split(',')[1]);
+                shopIdList.push(shopId);
+                shopNumList.push(shopNum);
             }
+            //console.log(shopIdList);
+            var query_1 = 'select shopid, shopName from shopinfo where shopid in (' + shopIdList +')';
+            connection.query(query_1, function(err_1, res, fields){
+                if (err_1){ throw err_1;}
+                for (var i = 0; i < res.length; ++i){
+                    shopId = res[i].shopid;
+                    shopname = res[i].shopName;
+                    shopNum = shopNumList[shopIdList.indexOf(shopId)];
+                    tmp = [shopId, shopNum, shopname];
+                    console.log(tmp);
+                    shopList.push(tmp);
+                }
+                
+            });
         }
         userList = [];
         if (result.length>0){
@@ -177,7 +192,7 @@ app.get('/community/:communityId', function(req, res) {
         }
         //community->user->review
         var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")";
-        console.log(query2);
+        //console.log(query2);
         var categories = [];
         var dataList = [];
         connection.query(query2, function(err, rows, fields){
@@ -206,8 +221,8 @@ app.get('/community/:communityId', function(req, res) {
                 while (current < dateList.length){//bianli
                     var tmpDate = new Date(currentDate);
                     if (dateList[current] > tmpDate.setDate(currentDate.getDate() + 7)){
-                        console.log(currentDate)
-                        console.log(currentNum);
+                        //console.log(currentDate)
+                        //console.log(currentNum);
                         dataList.push(currentNum);
                         currentNum = 0;
                         
