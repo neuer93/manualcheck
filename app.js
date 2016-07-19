@@ -85,6 +85,7 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
                             current += 1;
                         }
                     }
+                    dataList.push(currentNum);
                     while(dataList.length < 104){ dataList.push(0);}
                     res.render('communityShop', {categories: categories, dataList: dataList});
                 }
@@ -169,6 +170,7 @@ app.get('/community/:communityId', function(req, res) {
             }
             //console.log(shopIdList);
             var query_1 = 'select shopid, shopName from shopinfo where shopid in (' + shopIdList +')';
+            console.log(query_1);
             connection.query(query_1, function(err_1, res, fields){
                 if (err_1){ throw err_1;}
                 for (var i = 0; i < res.length; ++i){
@@ -179,7 +181,13 @@ app.get('/community/:communityId', function(req, res) {
                     console.log(tmp);
                     shopList.push(tmp);
                 }
-                
+                shopList.sort(function(a,b){
+                    if (a[1] < b[1]){
+                        return 1;
+                    }else{
+                        return -1;
+                    }
+                });
             });
         }
         userList = [];
