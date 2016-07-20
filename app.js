@@ -87,7 +87,29 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
                     }
                     dataList.push(currentNum);
                     while(dataList.length < 104){ dataList.push(0);}
-                    res.render('communityShop', {categories: categories, dataList: dataList});
+                    var query2 = 'select beginTime, endTime from timeslot where communityId = '+ communityId + ' and shopId = ' + shopId;
+                    console.log(query2);
+                    connection.query(query2, function(err, rows, fields){
+                        if (err) {throw err;}
+                        if (rows){
+                            var begingWeek = 0;
+                            var endWeek = 0;
+                            var current = 0;
+                            var currentDate = new Date('2014-01-01');
+                            while (currentDate < rows[0].beginTime){
+                                currentDate.setDate(currentDate.getDate() + 7);
+                                current++;
+                            }
+                            beginWeek = current;
+                            while (currentDate < rows[0].endTime){
+                                currentDate.setDate(currentDate.getDate() + 7);
+                                current++;
+                            }
+                            endWeek = current;
+                            res.render('communityShop', {categories: categories, dataList: dataList, beginTime : beginWeek, endTime : endWeek});
+                        }
+                    });
+                    
                 }
             });
         }
@@ -252,6 +274,6 @@ app.get('/community/:communityId', function(req, res) {
     });
 });
 
-app.listen(3300, function (){
-    console.log('Example app listening on port 3300!');
+app.listen(3330, function (){
+    console.log('Example app listening on port 3330!');
 });
