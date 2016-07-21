@@ -33,7 +33,7 @@ html
                         li
                             a(href='#Basic', data-toggle='tab') Basic
                         li
-                            a(href='#Shoplist', data-toggle='tab') Shoplist
+                            a(href='#Shoplist', data-toggle='tab') Campaign window
                         li
                             a(href='#Userlist', data-toggle='tab') Userlist
                         li
@@ -90,17 +90,29 @@ html
                                     - cnt=0;
                                     - for (var j = last_i; j < last_i + 4; ++j){
                                         div
-                                            div(style='float:left;width:25%;height:50px') #{shopList[j][2]}
+                                            div(style='float:left;width:25%;height:30px') #{shopList[j][2]}
+                                    - }
+                                    - for (var j = last_i; j < last_i + 4; ++j){
+                                        div
+                                            div(style='float:left;width:25%;height:50px') [#{shopList[j][3]}]-[#{shopList[j][4]}]
                                     - }
                                     - last_i=last_i+4;
                         - }
                         - for (var j = 0; j < 4 -cnt; ++j){
                             div
-                                div(style='float:left;width:25%;height:50px')
+                                div(style='float:left;width:25%;height:30px')
                         - }
                         - for (var j = last_i; j < last_i + cnt; ++j){
                             div
-                                div(style='float:left;width:25%;height:50px') #{shopList[j][2]}
+                                div(style='float:left;width:25%;height:30px') #{shopList[j][2]}
+                        - }
+                        - for (var j = 0; j < 4 -cnt; ++j){
+                            div
+                                div(style='float:left;width:25%;height:30px')
+                        - }
+                        - for (var j = last_i; j < last_i + cnt; ++j){
+                            div
+                                div(style='float:left;width:25%;height:50px') [#{shopList[j][3]}]-[#{shopList[j][4]}]
                         - }
                     #Userlist.tab-pane.fade
                         - max = userList.length

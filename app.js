@@ -184,96 +184,132 @@ app.get('/community/:communityId', function(req, res) {
             shopString = result[0].shopList;
             r = /\d+, \d+/g;
             shopStringList = shopString.match(r);
-            for (item in shopStringList){
-                shopId = eval(shopStringList[item].split(',')[0]);
-                shopNum = eval(shopStringList[item].split(',')[1]);
-                shopIdList.push(shopId);
-                shopNumList.push(shopNum);
-            }
-            //console.log(shopIdList);
-            var query_1 = 'select shopid, shopName from shopinfo where shopid in (' + shopIdList +')';
-            console.log(query_1);
-            connection.query(query_1, function(err_1, res, fields){
-                if (err_1){ throw err_1;}
-                for (var i = 0; i < res.length; ++i){
-                    shopId = res[i].shopid;
-                    shopname = res[i].shopName;
-                    shopNum = shopNumList[shopIdList.indexOf(shopId)];
-                    tmp = [shopId, shopNum, shopname];
-                    console.log(tmp);
-                    shopList.push(tmp);
-                }
-                shopList.sort(function(a,b){
-                    if (a[1] < b[1]){
-                        return 1;
-                    }else{
-                        return -1;
+            // go to timeslot and try to select the valid shopId;
+            query_0 = 'select shopId, beginTime, endTime from timeslot where communityId = ' + communityId;
+            console.log(query_0);
+            to_select = [];
+            beginTimeList = [];
+            endTimeList = [];
+            beginTimeListSelect = [];
+            endTimeListSelect = [];
+            connection.query(query_0, function(err_0, res0, fields){
+                if (err_0) {throw err_0;}
+                if (res0){
+                    for (item in res0){
+                        to_select.push(eval(res0[item].shopId));
+                        beginTimeList.push(res0[item].beginTime);
+                        endTimeList.push(res0[item].endTime);
                     }
-                });
-            });
-        }
-        userList = [];
-        if (result.length>0){
-            userString = result[0].userList;
-            userStringList = userString.split(',');
-            for (item in userStringList){
-                userList.push(userStringList[item]);
-            }
-        }
-        //community->user->review
-        var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")";
-        //console.log(query2);
-        var categories = [];
-        var dataList = [];
-        connection.query(query2, function(err, rows, fields){
-            if(err){throw err;}
-            var reviewsList = [];
-            if(rows){
-                for (item in rows){
-                    var dateTmp = rows[item].date;
-                    var userId = rows[item].userid;
-                    reviewsList.push({date: dateTmp, userId: userId});
                 }
-                var dateList = [];
-                for (i in reviewsList){
-                    dateList.push(reviewsList[i].date);
+                //console.log(to_select);
+                console.log(to_select.length);
+                console.log(shopStringList.length);
+                for (item in shopStringList){
+                    shopId = eval(shopStringList[item].split(',')[0]);
+                
+                    if (to_select.indexOf(shopId)<0) {continue;} // select valid ones
+                    shopNum = eval(shopStringList[item].split(',')[1]);
+                    shopIdList.push(shopId);
+                    shopNumList.push(shopNum);
+                    beginTimeListSelect.push(beginTimeList[to_select.indexOf(shopId)]);
+                    endTimeListSelect.push(endTimeList[to_select.indexOf(shopId)]);
                 }
-                dateList.sort(function(a,b){
-                    return new Date(a) - new Date(b);
-                });
-                // calculate the distribution of the dates
-                for (var i=0; i < 104; ++i){
-                    categories.push(i);
-                }
-                var current = 0;
-                var currentNum = 0;
-                var currentDate = new Date('2014-01-01');
-                while (current < dateList.length){//bianli
-                    var tmpDate = new Date(currentDate);
-                    if (dateList[current] > tmpDate.setDate(currentDate.getDate() + 7)){
-                        //console.log(currentDate)
-                        //console.log(currentNum);
-                        dataList.push(currentNum);
-                        currentNum = 0;
+                console.log(shopIdList.length);
+                var query_1 = 'select shopid, shopName from shopinfo where shopid in (' + shopIdList +')';
+                //console.log(query_1);
+                connection.query(query_1, function(err_1, res1, fields){
+                    if (err_1){ throw err_1;}
+                    for (var i = 0; i < res1.length; ++i){
+                        shopId = res1[i].shopid;
+                        shopname = res1[i].shopName;
+                        shopNum = shopNumList[shopIdList.indexOf(shopId)];
+                        beginTime = beginTimeListSelect[shopIdList.indexOf(shopId)];
+                        endTime = endTimeListSelect[shopIdList.indexOf(shopId)];
+                        tmp = [shopId, shopNum, shopname, beginTime, endTime];
+                        //console.log(tmp);
+                        shopList.push(tmp);
+                    }
+                    shopList.sort(function(a,b){
+                        if (a[1] < b[1]){
+                            return 1;
+                        }else{
+                            return -1;
+                        }
+                    });
+                    for (var i = 0; i < shopList.length; ++i){
+                        shopList[i][3] = dateFormat(shopList[i][3], 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
+                        shopList[i][4] = dateFormat(shopList[i][4], 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
+                    }
+                    console.log(shopList);
+                    userList = [];
+                    if (result.length>0){
+                        userString = result[0].userList;
+                        userStringList = userString.split(',');
+                        for (item in userStringList){
+                            userList.push(userStringList[item]);
+                        }
+                    }
+                    //community->user->review
+                    var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")";
+                    //console.log(query2);
+                    var categories = [];
+                    var dataList = [];
+                    connection.query(query2, function(err, rows, fields){
+                        if(err){throw err;}
+                        var reviewsList = [];
+                        if(rows){
+                            for (item in rows){
+                                var dateTmp = rows[item].date;
+                                var userId = rows[item].userid;
+                                reviewsList.push({date: dateTmp, userId: userId});
+                            }
+                            var dateList = [];
+                            for (i in reviewsList){
+                                dateList.push(reviewsList[i].date);
+                            }
+                            dateList.sort(function(a,b){
+                                return new Date(a) - new Date(b);
+                            });
+                            // calculate the distribution of the dates
+                            for (var i=0; i < 104; ++i){
+                                categories.push(i);
+                            }
+                            var current = 0;
+                            var currentNum = 0;
+                            var currentDate = new Date('2014-01-01');
+                            while (current < dateList.length){//bianli
+                                var tmpDate = new Date(currentDate);
+                                if (dateList[current] > tmpDate.setDate(currentDate.getDate() + 7)){
+                                    //console.log(currentDate)
+                                    //console.log(currentNum);
+                                    dataList.push(currentNum);
+                                    currentNum = 0;
                         
-                        currentDate.setDate(currentDate.getDate() + 7);
-                    }else{
-                        currentNum += 1;
-                        current += 1;
-                    }
-                }
-                dataList.push(currentNum);
-                while(dataList.length < 104){ dataList.push(0);}
-                if(result){
-                    var communityID = result[0].id;
-                    res.render('community', {info: result, communityID: communityID, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
-                }
-            }
-        });
+                                    currentDate.setDate(currentDate.getDate() + 7);
+                                }else{
+                                    currentNum += 1;
+                                    current += 1;
+                                }
+                            }
+                            dataList.push(currentNum);
+                            while(dataList.length < 104){ dataList.push(0);}
+                            //if(result){
+                            var communityID = result[0].id;
+                            res.render('community', {info: result, communityID: communityID, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
+                            //}
+                        }
+                    });
+                });
+                
+            });
+            
+            
+        }
+        
 
     });
 });
 
-app.listen(3300, function (){
-    console.log('Example app listening on port 3300!');
+app.listen(3330, function (){
+    console.log('Example app listening on port 3330!');
 });
