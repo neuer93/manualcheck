@@ -127,7 +127,11 @@ app.get('/users/:userId', function (req, res) {
     connection.query(query2, function(err, results, fields){
         if(err){throw err;}
         if(results){
-            coreNeighbour = results[0].coreNeighbour.split(',');
+            if (results.length == 0){
+                coreNeighbour = []
+            }else{
+                coreNeighbour = results[0].coreNeighbour.split(',');
+            }
             //console.log(coreNeighbour);
         }
     });
@@ -310,6 +314,6 @@ app.get('/community/:communityId', function(req, res) {
     });
 });
 
-app.listen(3330, function (){
+app.listen(3300, function (){
     console.log('Example app listening on port 3330!');
 });
