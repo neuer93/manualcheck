@@ -40,6 +40,8 @@ html
                             a(href='#Trend', data-toggle='tab') Trend
                         li
                             a(href='#Graph', data-toggle='tab') Graph
+                        li
+                            a(href='#Sybil', data-toggle='tab') Sybil
             .container
                 #myTabContent.tab-content
                     #Basic.tab-pane.fade.in.active
@@ -132,6 +134,25 @@ html
                     #Graph.tab-pane.fade
                         div(style='height:400px; width:100%;')
                             img(src="/pic/" + communityId + '.png')
+                    #Sybil.tab-pane.fade
+                        table.table.table-hover
+                            thead
+                                tr
+                                    th userId
+                                    th communityId
+                                    th sybilness
+                            tbody
+                                each item in sybilList
+                                    tr 
+                                        th 
+                                            a(href='/users/'+item[0]) #{item[0]}
+                                        th
+                                            if item[1]!=-1
+                                                a(href='/community/'+item[1]) #{item[1]}
+                                            else
+                                                h5 #{item[1]}
+                                        th #{item[2]}
+                                    
     script.
         $(function () {
               $('#myTab li:eq(1) a').tab('show');
