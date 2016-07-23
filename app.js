@@ -118,6 +118,7 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
 
 app.get('/users/:userId', function (req, res) {
     console.log('user');
+    var userId = req.params.userId;
     var query1 = 'select SI.shopname, SCI.shopId, SCI.userId, SCI.power, SCI.avgprice, SCI.Isgroup, SCI.score1, SCI.score2, SCI.score3, SCI.photo, SCI.date, SCI.filtered, ' +
         'content, numcommonuser from commentinfoshop as SCI join shopinfo as SI on SCI.shopid = SI.shopid where userId=' + req.params.userId + ' order by shopID asc';
     var query2 = 'select coreNeighbour from usernode where userId=' + req.params.userId;
@@ -138,10 +139,91 @@ app.get('/users/:userId', function (req, res) {
     connection.query(query1, function(err, rows, fields){
         if(err){throw err;}
         if(rows){
-            for (item in rows){
-                rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
-            }
-            res.render('user', {reviewsList: rows, coreNeighbour: coreNeighbour});
+            //匹配到timeslot，需要先query出来，在进行查找
+            
+            //console.log(rows);
+            var query_3 = 'select campaignwindow, sybilness from userinfo where userid = '+ userId;
+            //console.log(query_3);
+            connection.query(query_3, function(err_3, result, fields){
+                if (err_3) {throw err_3;}
+                if (result){
+                    //console.log(result);
+                    campaignwindow = result[0].campaignwindow;
+                    sybilness = result[0].sybilness;
+                    campaignWindowList = campaignwindow.split(',');
+                    camWinList = [];
+                    for (var i = 0; i < campaignWindowList.length; ++i){
+                        camWinList.push(eval(campaignWindowList[i]));
+                    }
+                    //找到timeslotid
+                    var query_4 = 'select id, shopId, beginTime, endTime from timeslot where id in ('+ camWinList +')';
+                    console.log(query_4);
+                    connection.query(query_4, function(err_4, result_4, fields){
+                        if (err_4) {throw err_4;};
+                        if (result_4){
+                            timeSlotList = [];
+                            for (item in result_4){
+                                begin = result_4[item].beginTime;
+                                end = result_4[item].endTime;
+                                shopid = result_4[item].shopId;
+                                id = result_4[item].id;
+                                time = [begin, end, shopid, id];
+                                timeSlotList.push(time);
+                            }
+                            console.log(timeSlotList);
+                            for (var i = 0; i < rows.length; ++i){
+                                curDate = rows[i].date;
+                                shopid = rows[i].shopId;
+                                //console.log(shopid);
+                                slotList = [];
+                                for (var j = 0; j < timeSlotList.length; ++j){
+                                    if (shopid = timeSlotList[j][2]){
+                                        //console.log(timeSlotList[j][2]);
+                                        if (curDate <= timeSlotList[j][1] && curDate >= timeSlotList[j][0]){
+                                           //console.log('find');
+                                           //console.log(shopid);
+                                           slotList.push(timeSlotList[j][3]);
+                                        }
+                                    }
+                                }
+                                rows[i].slotId = slotList.toString();
+                            }
+                            for (item in rows){
+                                rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
+                            }
+                            // calculation for sybilness
+                            console.log(sybilness);
+                            var sybilList = [];
+                            r = /\d+(.\d+)/g;
+                            sybilinfo = sybilness.match(r);
+                            console.log(sybilinfo);
+                            for (var i = 0; i < sybilinfo.length/2; ++i){
+                                com = eval(sybilinfo[2*i]);
+                                sybil = eval(sybilinfo[2*i+1]);
+                                tmp = [com, sybil];
+                                sybilList.push(tmp);
+                            }
+                            //console.log(sybilList);
+                            sybilList.sort(function(a,b){
+                                if (a[1] < b[1]){
+                                    return 1;
+                                }
+                                else {
+                                    return -1;
+                                }
+                            });
+                            var query_5 = 'select community from userinfo where userId = '+ userId;
+                            connection.query(query_5, function(err_5, res_5, fields){
+                                if (err_5) {throw err_5;}
+                                if (res_5){
+                                    var communityId = res_5[0].community;
+                                    res.render('user', {reviewsList: rows, communityId : communityId, coreNeighbour: coreNeighbour, sybilList: sybilList});
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
     });
 });
@@ -210,7 +292,7 @@ app.get('/community/:communityId', function(req, res) {
                 console.log(shopStringList.length);
                 for (item in shopStringList){
                     shopId = eval(shopStringList[item].split(',')[0]);
-                
+
                     if (to_select.indexOf(shopId)<0) {continue;} // select valid ones
                     shopNum = eval(shopStringList[item].split(',')[1]);
                     shopIdList.push(shopId);
@@ -297,10 +379,76 @@ app.get('/community/:communityId', function(req, res) {
                             }
                             dataList.push(currentNum);
                             while(dataList.length < 104){ dataList.push(0);}
-                            //if(result){
+                           
                             var communityID = result[0].id;
-                            res.render('community', {info: result, communityID: communityID, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
-                            //}
+                            var query3 = "select userId, sybilness from userinfo where sybilness like '%" + communityId +"%'";
+                            console.log(query3);
+                            connection.query(query3, function(err3, res3, fields){
+                                if (err3) {throw err3;}
+                                if (res3){
+                                    userIdAndSyb = [];
+                                    r = /\d+(.\d+)/g;
+                                    console.log('result length');
+                                    console.log(res3.length);
+                                    userToSybilnessDict = {}
+                                    for (var i = 0; i < res3.length; ++i){
+                                        userid = eval(res3[i].userId);
+                                        sybilinfo = res3[i].sybilness.match(r);
+                                        var j;
+                                        var sybilGrade;
+                                        for (j = 0; j < sybilinfo.length/2; ++j){
+                                            if (eval(sybilinfo[2*j]) == communityId){
+                                                sybilGrade = eval(sybilinfo[2*j+1]);
+                                                break;
+                                            }
+                                        }
+                                        if (j==sybilinfo.length/2){
+                                            //console.log('error');
+                                            continue;
+                                        }
+                                        tmp = [userid, sybilGrade];
+                                        userToSybilnessDict[userid] = [sybilGrade]
+                                        //console.log(tmp);
+                                        userIdAndSyb.push(tmp);
+                                    } 
+                                    console.log(userIdAndSyb.length);
+                                    //userid + sybil id
+                                    // now to find the correspondent community
+                                    var userIdList = [];
+                                    for (var i = 0; i < userIdAndSyb.length; ++i){
+                                        userIdList.push(userIdAndSyb[i][0]);
+                                    }
+                                    var query4 = 'select userId, community from userinfo where userId in (' +userIdList +')';
+                                    //console.log(query4);
+                                    var sybilInfoList = [];
+                                    connection.query(query4, function(err4, res4, fields){
+                                        if(err4) { throw err4;}
+                                        if (res4){
+                                            for (var i = 0; i < res4.length; ++i){
+                                                userid = res4[i].userId;
+                                                comid = res4[i].community;
+                                                userToSybilnessDict[userid].push(comid)
+                                            }
+                                            for (userid in userToSybilnessDict){
+                                                tmp = [userid, userToSybilnessDict[userid][1], userToSybilnessDict[userid][0]];
+                                                if (tmp[2] > 0.5){
+                                                    sybilInfoList.push(tmp);
+                                                }
+                                            }
+                                            //console.log(sybilInfoList);
+                                            sybilInfoList.sort(function(a,b){
+                                                if (a[2] < b[2]){
+                                                    return 1;
+                                                }
+                                                else{
+                                                    return -1;
+                                                }
+                                            });
+                                            res.render('community', {info: result, sybilList : sybilInfoList, communityID: communityID, userList: userList, shopList: shopList, communityId: communityId, categories: categories, dataList: dataList});
+                                        }
+                                    });
+                                }
+                            });
                         }
                     });
                 });
@@ -315,5 +463,5 @@ app.get('/community/:communityId', function(req, res) {
 });
 
 app.listen(3300, function (){
-    console.log('Example app listening on port 3330!');
+    console.log('Example app listening on port 3300!');
 });

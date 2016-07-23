@@ -18,6 +18,11 @@ html
                                 -for (var i=0; i<coreNeighbour.length; i++){
                                     a(href='/users/' + coreNeighbour[i]) #{coreNeighbour[i]}&nbsp
                                 -}
+                    div(style='float:left;width:25%;height:50px')
+                        h4 &nbsp &nbsp communityId:
+                    div(style='float:left;width:75%;height:50px')
+                        h4 #{communityId}
+                   
                 .col-md-12
                     table.table.table-hover
                         thead
@@ -32,6 +37,7 @@ html
                             th photo
                             th date
                             th filtered
+                            th timeSlotId
                         tbody
                           each item in reviewsList
                             tr
@@ -46,3 +52,16 @@ html
                                 td #{item.photo}
                                 td #{item.date}
                                 td #{item.filtered}
+                                td #{item.slotId}
+                                
+                .col-md-12
+                    table.table.table-hover
+                        thead
+                          tr
+                            th community
+                            th sybilness
+                        tbody
+                            each item in sybilList
+                                tr
+                                    td #{item[0]}
+                                    td #{item[1]};
