@@ -150,12 +150,17 @@ app.get('/users/:userId', function (req, res) {
                     //console.log(result);
                     campaignwindow = result[0].campaignwindow;
                     sybilness = result[0].sybilness;
-                    campaignWindowList = campaignwindow.split(',');
+                    if (campaignwindow == null){
+                        campaignWindowList = [];
+                    }else{
+                        campaignWindowList = campaignwindow.split(',');
+                    }
                     camWinList = [];
                     for (var i = 0; i < campaignWindowList.length; ++i){
                         camWinList.push(eval(campaignWindowList[i]));
                     }
                     //ÕÒµ½timeslotid
+                    camWinList.push(-1)
                     var query_4 = 'select id, shopId, beginTime, endTime from timeslot where id in ('+ camWinList +')';
                     console.log(query_4);
                     connection.query(query_4, function(err_4, result_4, fields){
@@ -193,10 +198,16 @@ app.get('/users/:userId', function (req, res) {
                             }
                             // calculation for sybilness
                             console.log(sybilness);
+                            if (sybilness == null){
+                                sybilness = "{}";
+                            }
                             var sybilList = [];
                             r = /\d+(.\d+)/g;
                             sybilinfo = sybilness.match(r);
                             console.log(sybilinfo);
+                            if (sybilinfo  == null){
+                                sybilinfo = [];
+                            }
                             for (var i = 0; i < sybilinfo.length/2; ++i){
                                 com = eval(sybilinfo[2*i]);
                                 sybil = eval(sybilinfo[2*i+1]);
@@ -301,8 +312,10 @@ app.get('/community/:communityId', function(req, res) {
                     endTimeListSelect.push(endTimeList[to_select.indexOf(shopId)]);
                 }
                 console.log(shopIdList.length);
+                if (shopIdList.length == 0){
+                    shopIdList.push(-1)
+                }
                 var query_1 = 'select shopid, shopName from shopinfo where shopid in (' + shopIdList +')';
-                //console.log(query_1);
                 connection.query(query_1, function(err_1, res1, fields){
                     if (err_1){ throw err_1;}
                     for (var i = 0; i < res1.length; ++i){
@@ -337,7 +350,6 @@ app.get('/community/:communityId', function(req, res) {
                     }
                     //community->user->review
                     var query2 = "select userId,date from commentinfoshop where userId in ("  + userList + ")";
-                    //console.log(query2);
                     var categories = [];
                     var dataList = [];
                     connection.query(query2, function(err, rows, fields){
@@ -418,6 +430,9 @@ app.get('/community/:communityId', function(req, res) {
                                     for (var i = 0; i < userIdAndSyb.length; ++i){
                                         userIdList.push(userIdAndSyb[i][0]);
                                     }
+                                    if (userIdList.length == 0){
+                                        userIdList.push(-1);
+                                    }
                                     var query4 = 'select userId, community from userinfo where userId in (' +userIdList +')';
                                     //console.log(query4);
                                     var sybilInfoList = [];
@@ -431,7 +446,7 @@ app.get('/community/:communityId', function(req, res) {
                                             }
                                             for (userid in userToSybilnessDict){
                                                 tmp = [userid, userToSybilnessDict[userid][1], userToSybilnessDict[userid][0]];
-                                                if (tmp[2] > 0.5){
+                                                if (tmp[2] > 0.5 || userToSybilnessDict.length < 6000){
                                                     sybilInfoList.push(tmp);
                                                 }
                                             }
@@ -454,11 +469,7 @@ app.get('/community/:communityId', function(req, res) {
                 });
                 
             });
-            
-            
         }
-        
-
     });
 });
 
