@@ -142,7 +142,7 @@ app.get('/users/:userId', function (req, res) {
             //匹配到timeslot，需要先query出来，在进行查找
             
             //console.log(rows);
-            var query_3 = 'select campaignwindow, sybilness from userinfo where userid = '+ userId;
+            var query_3 = 'select campaignwindow, sybilness, communityEvents from userinfo where userid = '+ userId;
             //console.log(query_3);
             connection.query(query_3, function(err_3, result, fields){
                 if (err_3) {throw err_3;}
@@ -150,6 +150,7 @@ app.get('/users/:userId', function (req, res) {
                     //console.log(result);
                     campaignwindow = result[0].campaignwindow;
                     sybilness = result[0].sybilness;
+                    communityEvents = result[0].communityEvents;
                     if (campaignwindow == null){
                         campaignWindowList = [];
                     }else{
@@ -196,7 +197,7 @@ app.get('/users/:userId', function (req, res) {
                             for (item in rows){
                                 rows[item].date = dateFormat(rows[item].date, 'isoDateTime').replace(/T/, ' ').replace(/\..+/, '').replace(/00.*/,'');
                             }
-                            // calculation for sybilness
+                            // calculation for sybilness and communtiyEvents
                             console.log(sybilness);
                             if (sybilness == null){
                                 sybilness = "{}";
@@ -204,17 +205,32 @@ app.get('/users/:userId', function (req, res) {
                             var sybilList = [];
                             r = /\d+(.\d+)/g;
                             sybilinfo = sybilness.match(r);
+                            r2 = /\d+/g;
+                            communityInfo = communityEvents.match(r2);
                             console.log(sybilinfo);
+                            console.log(communityInfo);
+                                                        if (communityInfo == null){
+                                                           communityInfo = {} 
+                                                       }
                             if (sybilinfo  == null){
                                 sybilinfo = [];
                             }
+                            // commentDic[communityId] = number of comments;
+                            commentDic = {};
+                            for (var i = 0; i < communityInfo.length/2; ++i){
+                                com = eval(communityInfo[2*i]);
+                                number = eval(communityInfo[2*i+1]);
+                                commentDic[com]=number; 
+                            }
+                            //console.log(commentDic);
                             for (var i = 0; i < sybilinfo.length/2; ++i){
                                 com = eval(sybilinfo[2*i]);
                                 sybil = eval(sybilinfo[2*i+1]);
-                                tmp = [com, sybil];
+                                number = commentDic[com];
+                                tmp = [com, sybil, number];
                                 sybilList.push(tmp);
                             }
-                            //console.log(sybilList);
+                            console.log(sybilList);
                             sybilList.sort(function(a,b){
                                 if (a[1] < b[1]){
                                     return 1;

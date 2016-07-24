@@ -22,7 +22,21 @@ html
                         h4 &nbsp &nbsp communityId:
                     div(style='float:left;width:75%;height:50px')
                         h4 #{communityId}
-                   
+
+                .col-md-12
+                    table.table.table-hover
+                        thead
+                          tr
+                            th community
+                            th sybilness
+                            th numberOfComments
+                        tbody
+                            each item in sybilList
+                                tr
+                                    td 
+                                        a(href='/community/'+item[0]) #{item[0]}
+                                    td #{item[1]}
+                                    td #{item[2]}
                 .col-md-12
                     table.table.table-hover
                         thead
@@ -54,14 +68,4 @@ html
                                 td #{item.filtered}
                                 td #{item.slotId}
                                 
-                .col-md-12
-                    table.table.table-hover
-                        thead
-                          tr
-                            th community
-                            th sybilness
-                        tbody
-                            each item in sybilList
-                                tr
-                                    td #{item[0]}
-                                    td #{item[1]};
+                
