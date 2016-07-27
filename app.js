@@ -101,11 +101,14 @@ app.get('/community-shop/:communityId/:shopId', function (req, res) {
                                 current++;
                             }
                             beginWeek = current;
-                            while (currentDate < rows[0].endTime){
+                            while (currentDate <= rows[0].endTime){
                                 currentDate.setDate(currentDate.getDate() + 7);
                                 current++;
                             }
                             endWeek = current;
+                            // actually plus one for pug file
+                            console.log(beginWeek);
+                            console.log(endWeek);
                             res.render('communityShop', {categories: categories, dataList: dataList, beginTime : beginWeek, endTime : endWeek});
                         }
                     });
