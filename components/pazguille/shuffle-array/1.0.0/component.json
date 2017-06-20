@@ -1,0 +1,20 @@
+{
+  "name": "shuffle-array",
+  "description": "Randomize the order of the elements in a given array.",
+  "version": "1.0.0",
+  "author": "Guille Paz <guille87paz@gmail.com>",
+  "twitter": "@pazguille",
+  "keywords": [
+    "random",
+    "shuffle",
+    "array"
+  ],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "scripts": [
+    "index.js"
+  ],
+  "repository": "pazguille/shuffle-array",
+  "resolved": "50bfa6cb7555c7acd6c1568291785a1cfb736e99"
+}

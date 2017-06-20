@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title= title
+        link(href='http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css', rel='stylesheet')
+        script(src='http://libs.baidu.com/jquery/1.9.0/jquery.js')
+        script(src='http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js')
+        script(src="https://code.highcharts.com/highcharts.js")
+        script(src="https://code.highcharts.com/modules/exporting.js")
+        script(src="/js/community.js")
+    body
+        .container-fluid
+              h3 &nbsp seniorSybilList:
+              .row-fluid
+                .col-md-12
+                  table.table.table-hover
+                    thead
+                      tr
+                        th
+                          | userId
+                        th
+                          | Sybilness
+                      each item in userInfo
+                          tr
+                            td
+                                a(href='/users/' + item.userid) #{item.userid}
+                            td #{item.sybilnessUser}

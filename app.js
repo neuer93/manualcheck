@@ -3,6 +3,7 @@ var app = express();
 var birds = require('./routers/birds.js')
 var mysql = require('mysql');
 var dateFormat = require('dateformat');
+var shuffle = require('shuffle-array');
 
 var connection = mysql.createConnection({
     host     : 'localhost',
@@ -186,7 +187,7 @@ app.get('/users/:userId', function (req, res) {
                                 //console.log(shopid);
                                 slotList = [];
                                 for (var j = 0; j < timeSlotList.length; ++j){
-                                    if (shopid = timeSlotList[j][2]){
+                                    if (shopid == timeSlotList[j][2]){
                                         //console.log(timeSlotList[j][2]);
                                         if (curDate <= timeSlotList[j][1] && curDate >= timeSlotList[j][0]){
                                            //console.log('find');
@@ -209,12 +210,15 @@ app.get('/users/:userId', function (req, res) {
                             r = /\d+(.\d+)/g;
                             sybilinfo = sybilness.match(r);
                             r2 = /\d+/g;
+                            if (communityEvents == null){
+                                communityEvents = ""
+                            }
                             communityInfo = communityEvents.match(r2);
                             console.log(sybilinfo);
                             console.log(communityInfo);
-                                                        if (communityInfo == null){
-                                                           communityInfo = {} 
-                                                       }
+                            if (communityInfo == null){
+                               communityInfo = {} 
+                           }
                             if (sybilinfo  == null){
                                 sybilinfo = [];
                             }
@@ -247,7 +251,7 @@ app.get('/users/:userId', function (req, res) {
                                 if (err_5) {throw err_5;}
                                 if (res_5){
                                     var communityId = res_5[0].community;
-                                    res.render('user', {reviewsList: rows, communityId : communityId, coreNeighbour: coreNeighbour, sybilList: sybilList});
+                                    res.render('user', {userId: userId, reviewsList: rows, communityId : communityId, coreNeighbour: coreNeighbour, sybilList: sybilList});
                                 }
                             });
                         }
@@ -260,7 +264,7 @@ app.get('/users/:userId', function (req, res) {
 
 app.get('/allCommunity', function(req, res){
     console.log('all community');
-    var query = 'select id, manualCheck, size, avgDeltaScores, entropyOfShops, entropyOfGeoShops from community where done = 0 order by size desc';
+    var query = 'select id, manualCheck, label, size, avgDeltaScores, entropyOfShops, entropyOfGeoShops from community where done = 0 order by size desc';
     console.log(query);
     connection.query(query, function(err, result, fields){
         if(err){throw err;}
@@ -461,7 +465,9 @@ app.get('/community/:communityId', function(req, res) {
                                             for (var i = 0; i < res4.length; ++i){
                                                 userid = res4[i].userId;
                                                 comid = res4[i].community;
-                                                userToSybilnessDict[userid].push(comid)
+                                                if (userid in userToSybilnessDict){
+                                                    userToSybilnessDict[userid].push(comid)
+                                                }
                                             }
                                             for (userid in userToSybilnessDict){
                                                 tmp = [userid, userToSybilnessDict[userid][1], userToSybilnessDict[userid][0]];
@@ -486,8 +492,18 @@ app.get('/community/:communityId', function(req, res) {
                         }
                     });
                 });
-                
             });
+        }
+    });
+});
+
+app.get('/seniorSybilRank', function (req, res) {
+    var query = "select userid, sybilnessUser from userinfo where community = -1 order by sybilnessUser desc limit 10000";
+    connection.query(query, function(err, rows, fields){
+        if(err) { throw err;}
+        if (rows){
+//            shuffle(rows);
+            res.render('seniorSybilRank', {title: 'Senior Sybil TOP 250', userInfo: rows.slice(0, 1000)});
         }
     });
 });

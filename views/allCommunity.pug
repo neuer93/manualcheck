@@ -18,6 +18,8 @@ html
                         th
                           | ManualCheck
                         th
+                          | Label
+                        th
                           | Size
                         th
                           | avgDeltaScore
@@ -31,6 +33,7 @@ html
                             td
                                 a(href='/community/' + item.id) #{item.id}
                             td #{item.manualCheck}
+                            td #{item.label}
                             td #{item.size}
                             td #{item.avgDeltaScores}
                             td #{item.entropyOfShops}
